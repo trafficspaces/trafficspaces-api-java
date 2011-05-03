@@ -97,7 +97,7 @@ public class Connector {
 		httpCon.setDoOutput(true);
 		httpCon.setRequestMethod(method.toUpperCase());
 		
-		String basicAuth = "Basic " + Base64.encode((endPoint.username + ":" + endPoint.password").getBytes());
+		String basicAuth = "Basic " + Base64.encode((endPoint.username + ":" + endPoint.password).getBytes());
 		httpCon.setRequestProperty ("Authorization", basicAuth);
 		
 		String contentType = format.equalsIgnoreCase("JSON") ? "application/json" : "application/xml";
