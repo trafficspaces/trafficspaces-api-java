@@ -46,8 +46,6 @@ import java.io.IOException;
 public class APITest {	
 
 	public static void main(String[] args) throws IOException, TrafficspacesAPIException {
-		//args = new String[] {"stbadvertising", "demo", "bb00049c02226b4bbfa2f9ed5f3900662be0d7c7791ff6cd6027a00f492f3fd6"};
-		args = new String[] {"stbadvertising", "e767e0c60e33b489a2fdcf8165705d317f3109173967ff13effd9c8527a6878a"};
 		if (args == null || args.length != 2) {
 			System.out.println("Usage: java " + APITest.class.getName() +" <subdomain> <apikey>");
 			System.exit(-1);
