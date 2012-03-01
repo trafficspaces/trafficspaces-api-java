@@ -39,6 +39,7 @@ public class Zone extends Resource {
 	public String scope;
 	public String info_url;
 	public String preview_url;
+	public String thumbnail_url;
 	public String default_ad_tag;
 	public String description;
 	public LinkedResource linked_user;
@@ -67,6 +68,7 @@ public class Zone extends Resource {
 		public String model;
 		public boolean accept_bids;
 		public double price;
+		public double price_increment;
 		public int volume_minimum;
 		public int volume_maximum;
 		public int volume_increment;

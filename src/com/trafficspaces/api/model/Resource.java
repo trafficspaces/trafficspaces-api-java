@@ -92,9 +92,10 @@ public abstract class Resource {
 	public void setJSONObject(JSONObject jsonObject) {
 		Iterator itr = jsonObject.keys();
 		while (itr.hasNext()) {
+			String key = (String) itr.next();
+			Object value = jsonObject.opt(key);
+
 			try {
-				String key = (String) itr.next();
-				Object value = jsonObject.opt(key);
 				Field field = this.getClass().getField(key);
 				Class type = field.getType();
 
@@ -126,7 +127,8 @@ public abstract class Resource {
 					field.set(this, (String) value);
 				}	
 			} catch (Exception nsfe) {
-				System.err.println("error: "+nsfe.getMessage());
+				//nsfe.printStackTrace();
+				System.err.println("error: key="+key+",value="+value+", error="+nsfe.getMessage());
 			}
 		}
 	}

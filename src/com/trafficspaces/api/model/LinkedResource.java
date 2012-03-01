@@ -37,6 +37,8 @@ public class LinkedResource extends Resource {
 	//******************************
 	private String resourceName;
 	
+	public LinkedResource() {}
+	
 	public LinkedResource(String resourceName) {
 		this.resourceName = resourceName;
 	}
