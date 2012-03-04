@@ -81,7 +81,7 @@ public class APITest {
 		APITest apiTest = new APITest(args[0], args[1]);
 		
 		apiTest.testUserAPI();
-		apiTest.testContactAPI();
+		apiTest.testContactAPI(); if (true) return;
 		apiTest.testZoneAPI();
 		apiTest.testAdAPI();
 		apiTest.testCampaignAPI();
@@ -120,7 +120,7 @@ public class APITest {
 				new Contact.Profile("john@test.com", "Test Company", Contact.Profile.TYPE_ADVERTISER),
 				null);
 		contact = (Contact) connector.create(contact);
-		System.out.println("Create: " + (contact != null ? "Succesful" : "Failed") + ". The new ID is " + contact.id);
+		System.out.println("Create: " + (contact != null ? "Succesful" : "Failed") + (contact != null ? ". The new ID is " + contact.id : ""));
 		
 		// 3. Update
 		contact.name = "Jane Smith";
@@ -131,14 +131,12 @@ public class APITest {
 		contact.profile.contact_details.state = "NY";
 		contact.profile.contact_details.country = "us";
 		Contact updatedContact = (Contact) connector.update(contact);
-		System.out.println("Update " + (updatedContact.id.equals(contact.id) && updatedContact.name.equals(contact.name) ? "Successful" : "Failed"));
+		System.out.println("Update: " + (updatedContact != null && updatedContact.id.equals(contact.id) && updatedContact.name.equals(contact.name) ? "Successful" : "Failed"));
 		
 		// 4. Delete
-		connector.delete(contact.id);
-		try {
-			connector.read(contact.id);
+		if (!connector.delete(contact.id) || connector.read(contact.id) != null) {
 			System.out.println("Delete: Failed");
-		} catch (FileNotFoundException fnfe) {
+		} else {
 			System.out.println("Delete: Successful");
 		}
 	}
@@ -157,7 +155,7 @@ public class APITest {
 		// 2. Create
 		Zone zone = Zone.createZone("Test Zone", 300, 250, "text,image,flash", new Zone.Pricing("cpm", 5.0));
 		zone = (Zone) connector.create(zone);
-		System.out.println("Create: " + (zone != null ? "Successful" : "Failed") + ". The new ID is " + zone.id);
+		System.out.println("Create: " + (zone != null ? "Successful" : "Failed") + (zone != null ? ". The new ID is " + zone.id : ""));
 		
 		// 3. Update
 		zone.name = "Test Zone 2";
@@ -167,14 +165,12 @@ public class APITest {
 		zone.position = "anywhere";
 		zone.channel = "blog";
 		Zone updatedZone = (Zone) connector.update(zone);
-		System.out.println("Update: " + (updatedZone.id.equals(zone.id) && updatedZone.name.equals(zone.name) ? "Successful" : "Failed"));
+		System.out.println("Update: " + (updatedZone != null && updatedZone.id.equals(zone.id) && updatedZone.name.equals(zone.name) ? "Successful" : "Failed"));
 		
 		// 4. Delete
-		connector.delete(zone.id);
-		try {
-			connector.read(zone.id);
+		if (!connector.delete(zone.id) || connector.read(zone.id) != null) {
 			System.out.println("Delete: Failed");
-		} catch (FileNotFoundException fnfe) {
+		} else {
 			System.out.println("Delete: Successful");
 		}
 	}
@@ -194,7 +190,7 @@ public class APITest {
 		Ad ad = Ad.createAd("Test Ad", 300, 250, "text",
 				Ad.Creative.createTextCreative("My Ad Title", "My Ad Caption", "TestAd.com", null, "http://www.testad.com"));
 		ad = (Ad) connector.create(ad);
-		System.out.println("Create: " + (ad != null ? "Successful" : "Failed") + ". The new ID is " + ad.id);
+		System.out.println("Create: " + (ad != null ? "Successful" : "Failed") + (ad != null ? ". The new ID is " + ad.id : ""));
 		
 		// 3. Update
 		ad.name = "Test Ad 2";
@@ -203,14 +199,12 @@ public class APITest {
 		ad.creative.caption = "Yet another caption";
 		ad.creative.target_url = "http://www.testads.com/landing_page/";
 		Ad updatedAd = (Ad) connector.update(ad);
-		System.out.println("Update: " + (updatedAd.id.equals(ad.id) && updatedAd.name.equals(ad.name) ? "Successful" : "Failed"));
+		System.out.println("Update: " + (updatedAd!= null && updatedAd.id.equals(ad.id) && updatedAd.name.equals(ad.name) ? "Successful" : "Failed"));
 		
 		// 4. Delete
-		connector.delete(ad.id);
-		try {
-			connector.read(ad.id);
+		if (!connector.delete(ad.id) || connector.read(ad.id) != null) {
 			System.out.println("Delete: Failed");
-		} catch (FileNotFoundException fnfe) {
+		} else {
 			System.out.println("Delete: Successful");
 		}
 	}
@@ -229,7 +223,7 @@ public class APITest {
 		// 2. Create
 		Campaign campaign = Campaign.createCampaign("Test Campaign", null);
 		campaign = (Campaign) connector.create(campaign);
-		System.out.println("Create: " + (campaign != null ? "Successful" : "Failed") + ". The new ID is " + campaign.id);
+		System.out.println("Create: " + (campaign != null ? "Successful" : "Failed") + (campaign != null ? ". The new ID is " + campaign.id : ""));
 		
 		// 3. Update
 		Ad ad = Ad.createAd("Test Ad", 300, 250, "text",
@@ -239,16 +233,14 @@ public class APITest {
 		campaign.name = "Test Campaign 2";
 		campaign.linked_ads = new LinkedResource[] { new LinkedResource(ad.id, ad.name) };
 		Campaign updatedCampaign = (Campaign) connector.update(campaign);
-		System.out.println("Update: " + (updatedCampaign.id.equals(campaign.id) && updatedCampaign.name.equals(campaign.name) &&
+		System.out.println("Update: " + (updatedCampaign != null && updatedCampaign.id.equals(campaign.id) && updatedCampaign.name.equals(campaign.name) &&
 				updatedCampaign.linked_ads != null && updatedCampaign.linked_ads.length == 1 ? "Successful" : "Failed"));
 		
 		// 4. Delete
 		factory.getAdConnector().delete(ad.id);
-		connector.delete(campaign.id);
-		try {
-			connector.read(campaign.id);
+		if (!connector.delete(campaign.id) || connector.read(campaign.id) != null) {
 			System.out.println("Delete: Failed");
-		} catch (FileNotFoundException fnfe) {
+		} else {
 			System.out.println("Delete: Successful");
 		}
 	}
@@ -267,7 +259,7 @@ public class APITest {
 		// 2. Create
 		TargetingPlan targetingPlan = new TargetingPlan("Test Targeting Plan", null);
 		targetingPlan = (TargetingPlan) connector.create(targetingPlan);
-		System.out.println("Create: " + (targetingPlan != null ? "Successful" : "Failed") + ". The new ID is " + targetingPlan.id);
+		System.out.println("Create: " + (targetingPlan != null ? "Successful" : "Failed") + (targetingPlan != null ? ". The new ID is " + targetingPlan.id : ""));
 		
 		// 3. Update
 		targetingPlan.name = "Test Targeting Plan 2";
@@ -275,17 +267,15 @@ public class APITest {
 		targetingPlan.targets.geographics = "us,ca";
 		targetingPlan.targets.keywords = "football,basketball,baseball,hockey";
 		TargetingPlan updatedTargetingPlan = (TargetingPlan) connector.update(targetingPlan);
-		System.out.println("Update: " + (updatedTargetingPlan.id.equals(targetingPlan.id) && updatedTargetingPlan.name.equals(targetingPlan.name) &&
+		System.out.println("Update: " + (updatedTargetingPlan != null && updatedTargetingPlan.id.equals(targetingPlan.id) && updatedTargetingPlan.name.equals(targetingPlan.name) &&
 				updatedTargetingPlan.targets != null && 
 				csv2Set(updatedTargetingPlan.targets.geographics).equals(csv2Set(targetingPlan.targets.geographics)) && 
 				csv2Set(updatedTargetingPlan.targets.keywords).equals(csv2Set(targetingPlan.targets.keywords)) ? "Successful" : "Failed"));
 		
 		// 4. Delete
-		connector.delete(targetingPlan.id);
-		try {
-			connector.read(targetingPlan.id);
+		if (!connector.delete(targetingPlan.id) || connector.read(targetingPlan.id) != null) {
 			System.out.println("Delete: Failed");
-		} catch (FileNotFoundException fnfe) {
+		} else {
 			System.out.println("Delete: Successful");
 		}
 	}
@@ -304,22 +294,20 @@ public class APITest {
 		// 2. Create
 		Feed feed = Feed.createFeed("Test Feed", 728, 90, 100.0, "<!-- Google AdSense Backfill -->");
 		feed = (Feed) connector.create(feed);
-		System.out.println("Create: " + (feed != null ? "Successful" : "Failed") + ". The new ID is " + feed.id);
+		System.out.println("Create: " + (feed != null ? "Successful" : "Failed") + (feed != null ? ". The new ID is " + feed.id : ""));
 		
 		// 3. Update
 		feed.name = "Test Feed 2";
 		feed.weight = 20.0;
 		feed.ad_tag = "<!-- Another 3rd party Ad Tag-->";
 		Feed updatedFeed = (Feed) connector.update(feed);
-		System.out.println("Update: " + (updatedFeed.id.equals(feed.id) && updatedFeed.name.equals(feed.name) &&
+		System.out.println("Update: " + (updatedFeed != null && updatedFeed.id.equals(feed.id) && updatedFeed.name.equals(feed.name) &&
 				updatedFeed.weight == feed.weight && updatedFeed.ad_tag.equals(feed.ad_tag) ? "Successful" : "Failed"));
 
 		// 4. Delete
-		connector.delete(feed.id);
-		try {
-			connector.read(feed.id);
+		if (!connector.delete(feed.id) || connector.read(feed.id) != null) {
 			System.out.println("Delete: Failed");
-		} catch (FileNotFoundException fnfe) {
+		} else {
 			System.out.println("Delete: Successful");
 		}
 	}
@@ -349,13 +337,13 @@ public class APITest {
 		Order order = Order.createOrder(0.5, 100000, 1000, dateTimeFormat.format(new Date()), null, 
 				new LinkedResource(zone.id, zone.name), new LinkedResource(campaign.id, campaign.name));
 		order = (Order) connector.create(order);
-		System.out.println("Create: " + (order != null ? "Successful" : "Failed") + ". The new ID is " + order.id);
+		System.out.println("Create: " + (order != null ? "Successful" : "Failed") + (order != null ? ". The new ID is " + order.id : ""));
 
 		// 3. Update
 		order.maximum_bid_price = 0.75;
 		order.daily_volume = 5000;
 		Order updatedOrder = (Order) connector.update(order);
-		System.out.println("Update: " + (updatedOrder.id.equals(order.id) && updatedOrder.name.equals(order.name) &&
+		System.out.println("Update: " + (updatedOrder != null && updatedOrder.id.equals(order.id) && updatedOrder.name.equals(order.name) &&
 				updatedOrder.maximum_bid_price == order.maximum_bid_price && 
 				updatedOrder.daily_volume == order.daily_volume ? "Successful" : "Failed"));
 		
@@ -369,11 +357,9 @@ public class APITest {
 		factory.getAdConnector().delete(ad.id);
 		factory.getCampaignConnector().delete(campaign.id);
 		factory.getZoneConnector().delete(zone.id);
-		connector.delete(order.id);
-		try {
-			connector.read(order.id);
+		if (!connector.delete(order.id) || connector.read(order.id) != null) {
 			System.out.println("Delete: Failed");
-		} catch (FileNotFoundException fnfe) {
+		} else {
 			System.out.println("Delete: Successful");
 		}
 	}
@@ -399,7 +385,7 @@ public class APITest {
 		}
 		coupon = Coupon.createRelativeCoupon("Test Coupon", "HALFPRICE", 0, 50.0);
 		coupon = (Coupon) connector.create(coupon);
-		System.out.println("Create: " + (coupon != null ? "Successful" : "Failed") + ". The new ID is " + coupon.id);
+		System.out.println("Create: " + (coupon != null ? "Successful" : "Failed") + (coupon != null ? ". The new ID is " + coupon.id : ""));
 		
 		// 3. Update
 		coupon.name = "Test Coupon 2";
@@ -407,7 +393,7 @@ public class APITest {
 		coupon.maximum_cumulative_discount = 1000.0;
 		coupon.maximum_cumulative_uses = 10;
 		Coupon updatedCoupon = (Coupon) connector.update(coupon);
-		System.out.println("Update: " + (updatedCoupon.id.equals(coupon.id) && updatedCoupon.name.equals(coupon.name) &&
+		System.out.println("Update: " + (updatedCoupon != null && updatedCoupon.id.equals(coupon.id) && updatedCoupon.name.equals(coupon.name) &&
 				updatedCoupon.base_value == coupon.base_value && 
 				updatedCoupon.maximum_cumulative_discount == coupon.maximum_cumulative_discount &&
 				updatedCoupon.maximum_cumulative_uses == coupon.maximum_cumulative_uses ? "Successful" : "Failed"));
@@ -421,11 +407,9 @@ public class APITest {
 				updatedCoupon.cumulative_uses == (coupon.cumulative_uses + 1) ? "Successful" : "Failed"));
 		
 		// 5. Delete
-		connector.delete(coupon.id);
-		try {
-			connector.read(coupon.id);
+		if (!connector.delete(coupon.id) || connector.read(coupon.id) != null) {
 			System.out.println("Delete: Failed");
-		} catch (FileNotFoundException fnfe) {
+		} else {
 			System.out.println("Delete: Successful");
 		}
 	}

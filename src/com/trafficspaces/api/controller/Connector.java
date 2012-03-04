@@ -31,6 +31,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 
 import java.net.URL;
@@ -71,14 +72,17 @@ public class Connector {
 	public List find(Properties params) throws IOException, TrafficspacesAPIException {
 	    String jsonStr = sendRequest(resourcePath + "?" + toQueryString(params), "application/json");
 	    try {
-	  		JSONArray jsonArray = new JSONArray(jsonStr);
-	  		Object[] args = new Object[1];
-	  		ArrayList resourceList = new ArrayList();
-		    for (int i = 0; i < jsonArray.length(); i++) {
-		    	args[0] = jsonArray.getJSONObject(i);
-		    	
-		    	resourceList.add(resourceConstructor.newInstance(args));
-		    }
+	    	ArrayList resourceList = null;
+	    	if (jsonStr != null) {
+		    	JSONArray jsonArray = new JSONArray(jsonStr);
+		  		Object[] args = new Object[1];
+		  		resourceList = new ArrayList();
+		  		for (int i = 0; i < jsonArray.length(); i++) {
+			    	args[0] = jsonArray.getJSONObject(i);
+			    	
+			    	resourceList.add(resourceConstructor.newInstance(args));
+			    }
+	    	}
 		    return resourceList;
 	    } catch (Exception e) {
 	    	throw new TrafficspacesAPIException(e);
@@ -88,7 +92,7 @@ public class Connector {
 	public Resource read(String id) throws IOException, TrafficspacesAPIException {
 		String jsonStr = sendRequest(resourcePath + "/" + id + ".json", "application/json");
 		try {
-			return (Resource) resourceConstructor.newInstance(new Object[] {new JSONObject(jsonStr)});
+			return jsonStr != null ? (Resource) resourceConstructor.newInstance(new Object[] {new JSONObject(jsonStr)}) : null;
 		} catch (Exception e) {
 	    	throw new TrafficspacesAPIException(e);
 	    }	
@@ -97,7 +101,7 @@ public class Connector {
 	public Resource create(Resource resource) throws IOException, TrafficspacesAPIException {
 		String jsonStr = sendRequest(resourcePath, "application/json", "POST", resource.getJSON());
 		try {
-			return (Resource) resourceConstructor.newInstance(new Object[] {new JSONObject(jsonStr)});
+			return jsonStr != null ? (Resource) resourceConstructor.newInstance(new Object[] {new JSONObject(jsonStr)}) : null;
 		} catch (Exception e) {
 	    	throw new TrafficspacesAPIException(e);
 	    }	
@@ -106,15 +110,14 @@ public class Connector {
 	public Resource update(Resource resource) throws IOException, TrafficspacesAPIException {
 		String jsonStr = sendRequest(resourcePath + "/" + resource.id + ".json", "application/json", "PUT", resource.getJSON());
 		try {
-			return (Resource) resourceConstructor.newInstance(new Object[] {new JSONObject(jsonStr)});
+			return jsonStr != null ? (Resource) resourceConstructor.newInstance(new Object[] {new JSONObject(jsonStr)}) : null;
 		} catch (Exception e) {
 	    	throw new TrafficspacesAPIException(e);
 	    }	
 	}
 	
 	public boolean delete(String id) throws IOException, TrafficspacesAPIException {
-		sendRequest(resourcePath + "/" + id + ".json", "application/json", "DELETE", "");
-		return true;
+		return sendRequest(resourcePath + "/" + id + ".json", "application/json", "DELETE", "") != null;
 	}
 
 	/****************************************************
@@ -150,21 +153,29 @@ public class Connector {
 			httpCon.connect();
 		}
 		
-		char[] responseData = readResponseData(httpCon.getInputStream(), "UTF-8");
-		
-		int responseCode = httpCon.getResponseCode();
-		String redirectURL = null;
-		if ((responseCode == HttpURLConnection.HTTP_MOVED_PERM || responseCode == HttpURLConnection.HTTP_MOVED_PERM ||
-				responseCode == HttpURLConnection.HTTP_CREATED) && (redirectURL = httpCon.getHeaderField("Location")) != null) {
-			//System.out.println("Response code = " +responseCode + ". Redirecting to " + redirectURL);
-			return sendRequest(redirectURL, contentType);
+		char[] responseData = null;
+		try {
+			responseData = readResponseData(httpCon.getInputStream(), "UTF-8");
+		} catch (FileNotFoundException fnfe) {
+			// HTTP 404. Ignore and return null
 		}
-		if (responseCode != HttpURLConnection.HTTP_OK && responseCode != HttpURLConnection.HTTP_CREATED) {
-			throw new TrafficspacesAPIException("HTTP Error: " + responseCode + "; Data: " + new String(responseData));
+		String responseDataString = null;
+		if (responseData != null) {
+			int responseCode = httpCon.getResponseCode();
+			String redirectURL = null;
+			if ((responseCode == HttpURLConnection.HTTP_MOVED_PERM || responseCode == HttpURLConnection.HTTP_MOVED_PERM ||
+					responseCode == HttpURLConnection.HTTP_CREATED) && (redirectURL = httpCon.getHeaderField("Location")) != null) {
+				//System.out.println("Response code = " +responseCode + ". Redirecting to " + redirectURL);
+				return sendRequest(redirectURL, contentType);
+			}
+			if (responseCode != HttpURLConnection.HTTP_OK && responseCode != HttpURLConnection.HTTP_CREATED) {
+				throw new TrafficspacesAPIException("HTTP Error: " + responseCode + "; Data: " + new String(responseData));
+			}
+			//System.out.println("Headers: " + httpCon.getHeaderFields());
+			//System.out.println("Data: " + new String(responseData));
+			responseDataString = new String(responseData);
 		}
-		//System.out.println("Headers: " + httpCon.getHeaderFields());
-		//System.out.println("Data: " + new String(responseData));
-		return new String(responseData);
+		return responseDataString;
 	}
 	
 	private char[] readResponseData(InputStream stream, String encoding) {
