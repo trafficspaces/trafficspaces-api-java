@@ -69,7 +69,7 @@ public class Connector {
 	 ****************************************************/
 
 	public List find(Properties params) throws IOException, TrafficspacesAPIException {
-	    String jsonStr = sendRequest(resourcePath + "?" + toQueryString(params), "JSON");
+	    String jsonStr = sendRequest(resourcePath + "?" + toQueryString(params), "application/json");
 	    try {
 	  		JSONArray jsonArray = new JSONArray(jsonStr);
 	  		Object[] args = new Object[1];
@@ -86,34 +86,34 @@ public class Connector {
 	}
 
 	public Resource read(String id) throws IOException, TrafficspacesAPIException {
-		String jsonStr = sendRequest(resourcePath + "/" + id + ".json", "JSON");
+		String jsonStr = sendRequest(resourcePath + "/" + id + ".json", "application/json");
 		try {
-			return (Resource) resourceConstructor.newInstance(new Object[] {resourceConstructor.newInstance(new JSONObject(jsonStr))});
+			return (Resource) resourceConstructor.newInstance(new Object[] {new JSONObject(jsonStr)});
 		} catch (Exception e) {
 	    	throw new TrafficspacesAPIException(e);
 	    }	
 	}
 
 	public Resource create(Resource resource) throws IOException, TrafficspacesAPIException {
-		String jsonStr = sendRequest(resourcePath, "JSON", "POST", resource.getJSON());
+		String jsonStr = sendRequest(resourcePath, "application/json", "POST", resource.getJSON());
 		try {
-			return (Resource) resourceConstructor.newInstance(new Object[] {resourceConstructor.newInstance(new JSONObject(jsonStr))});
+			return (Resource) resourceConstructor.newInstance(new Object[] {new JSONObject(jsonStr)});
 		} catch (Exception e) {
 	    	throw new TrafficspacesAPIException(e);
 	    }	
 	}
 
 	public Resource update(Resource resource) throws IOException, TrafficspacesAPIException {
-		String jsonStr = sendRequest(resourcePath + "/" + resource.id + ".json", "JSON", "PUT", resource.getJSON());
+		String jsonStr = sendRequest(resourcePath + "/" + resource.id + ".json", "application/json", "PUT", resource.getJSON());
 		try {
-			return (Resource) resourceConstructor.newInstance(new Object[] {resourceConstructor.newInstance(new JSONObject(jsonStr))});
+			return (Resource) resourceConstructor.newInstance(new Object[] {new JSONObject(jsonStr)});
 		} catch (Exception e) {
 	    	throw new TrafficspacesAPIException(e);
 	    }	
 	}
 	
 	public boolean delete(String id) throws IOException, TrafficspacesAPIException {
-		sendRequest(resourcePath + "/" + id + ".json", "JSON", "DELETE", "");
+		sendRequest(resourcePath + "/" + id + ".json", "application/json", "DELETE", "");
 		return true;
 	}
 
@@ -121,12 +121,12 @@ public class Connector {
 	 **********       UTILITY FUNCTIONS       ***********
 	 ****************************************************/
 	
-	protected String sendRequest(String path, String format)
+	public String sendRequest(String path, String contentType)
  			throws IOException, TrafficspacesAPIException {
- 		return sendRequest(path, format, "GET", "");
+ 		return sendRequest(path, contentType, "GET", "");
 	}
  			
-	protected String sendRequest(String path, String format, String method, String data)
+	public String sendRequest(String path, String contentType, String method, String data)
 	 		throws IOException, TrafficspacesAPIException {
 		
 		URL url = new URL(endPoint.baseURI + path);
@@ -138,7 +138,6 @@ public class Connector {
 		String basicAuth = "Basic " + Base64.encodeBytes((endPoint.username + ":" + endPoint.password).getBytes());
 		httpCon.setRequestProperty ("Authorization", basicAuth);
 		
-		String contentType = format.equalsIgnoreCase("JSON") ? "application/json" : "application/xml";
 		httpCon.setRequestProperty("Content-Type", contentType + "; charset=UTF-8");
 		httpCon.setRequestProperty("Accept", contentType);
 		
@@ -154,9 +153,17 @@ public class Connector {
 		char[] responseData = readResponseData(httpCon.getInputStream(), "UTF-8");
 		
 		int responseCode = httpCon.getResponseCode();
+		String redirectURL = null;
+		if ((responseCode == HttpURLConnection.HTTP_MOVED_PERM || responseCode == HttpURLConnection.HTTP_MOVED_PERM ||
+				responseCode == HttpURLConnection.HTTP_CREATED) && (redirectURL = httpCon.getHeaderField("Location")) != null) {
+			//System.out.println("Response code = " +responseCode + ". Redirecting to " + redirectURL);
+			return sendRequest(redirectURL, contentType);
+		}
 		if (responseCode != HttpURLConnection.HTTP_OK && responseCode != HttpURLConnection.HTTP_CREATED) {
 			throw new TrafficspacesAPIException("HTTP Error: " + responseCode + "; Data: " + new String(responseData));
 		}
+		//System.out.println("Headers: " + httpCon.getHeaderFields());
+		//System.out.println("Data: " + new String(responseData));
 		return new String(responseData);
 	}
 	

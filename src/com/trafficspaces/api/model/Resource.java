@@ -62,23 +62,29 @@ public abstract class Resource {
 					
 					String name = fields[i].getName();
 					Class type = fields[i].getType();
-
+					
 					if (type.isPrimitive()) {
-						if (type.equals(Integer.class)) {
+						if (type.equals(int.class)) {
 							jsonObject.put(name, fields[i].getInt(this));
-						} else if (type.equals(Double.class)) {
+						} else if (type.equals(double.class)) {
 							jsonObject.put(name, fields[i].getDouble(this));
 						}
 					} else if (type.isArray()) {
+						JSONObject jsonSubObject = new JSONObject();
+						JSONArray jsonArray = new JSONArray();
+						
+						jsonObject.put(name, jsonSubObject);
+						jsonSubObject.put(name.substring(0, name.length()-1), jsonArray);
+						
 						Object[] values = (Object[]) fieldValue;
 						for (int j = 0; j < values.length; j++) {
 							if (values[j] != null && values[j] instanceof Resource) {
-								jsonObject.put(name, ((Resource) values[j]).getJSONObject());
+								jsonArray.put(((Resource) values[j]).getJSONObject());
 							}
 						}
-					} else if (type.equals(Resource.class)) {
+					} else if (Resource.class.isAssignableFrom(type)) {
 						jsonObject.put(name, ((Resource) fieldValue).getJSONObject());
-					} else if (type.equals(String.class)) {
+					} else if (type.equals(String.class) && fieldValue != null) {
 						jsonObject.put(name, String.valueOf(fieldValue));
 					}
 				}
@@ -100,25 +106,34 @@ public abstract class Resource {
 				Class type = field.getType();
 
 				int fieldModifiers = field.getModifiers();
-				//System.out.println("key=" + key + ", name=" + field.getName() + ", value=" + value + ", type=" +type + 
+				//System.out.println("key=" + key + ", name=" + field.getName() + ", value=" + value + ", type=" +type + ", componentType=" +type.getComponentType() + 
 				//		", ispublic="+Modifier.isPublic(fieldModifiers) + ", isstatic="+Modifier.isStatic(fieldModifiers) + ", isnative="+Modifier.isNative(fieldModifiers) +
 				//		", isprimitive="+type.isPrimitive() + ", isarray="+type.isArray() + ", isResource="+Resource.class.isAssignableFrom(type));
 				
 				if (type.isPrimitive()) {
-					if (type.equals(Integer.class)) {
+					if (type.equals(int.class)) {
 						field.setInt(this, jsonObject.getInt(key));
-					} else if (type.equals(Double.class)) {
+					} else if (type.equals(double.class)) {
 						field.setDouble(this, jsonObject.getDouble(key));
 					}
-				} else if (type.isArray() && value instanceof JSONArray) {
-					JSONArray jsonArray = (JSONArray) value;
-					Object[] values = (Object[]) Array.newInstance(type, jsonArray.length());
-					for (int j = 0; j < jsonArray.length(); j++) {
-						Resource resource = (Resource) type.newInstance();
-						resource.setJSONObject(jsonArray.getJSONObject(j));
-						values[j] = resource;
+				} else if (type.isArray()) {
+					JSONArray jsonArray = null;
+					if (value instanceof JSONArray) {
+						jsonArray = (JSONArray) value;
+					} else if (value instanceof JSONObject) {
+						JSONObject jsonSubObject = (JSONObject) value;
+						jsonArray = jsonSubObject.optJSONArray(key.substring(0, key.length()-1));
 					}
-					field.set(this, values);
+					if (jsonArray != null && jsonArray.length() > 0) {
+						Class componentType = type.getComponentType();
+						Object[] values = (Object[]) Array.newInstance(componentType, jsonArray.length());
+						for (int j = 0; j < jsonArray.length(); j++) {
+							Resource resource = (Resource) componentType.newInstance();
+							resource.setJSONObject(jsonArray.getJSONObject(j));
+							values[j] = resource;
+						}
+						field.set(this, values);
+					}
 				} else if (Resource.class.isAssignableFrom(type) && value instanceof JSONObject) {
 					Resource resource = (Resource) type.newInstance();
 					resource.setJSONObject((JSONObject) value);
@@ -126,9 +141,11 @@ public abstract class Resource {
 				} else if (type.equals(String.class) && value instanceof String) {
 					field.set(this, (String) value);
 				}	
-			} catch (Exception nsfe) {
-				//nsfe.printStackTrace();
-				System.err.println("error: key="+key+",value="+value+", error="+nsfe.getMessage());
+			} catch (NoSuchFieldException nsfe) {
+				System.err.println("warning: field does not exist. key="+key+",value="+value);
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.err.println("error: key="+key+",value="+value+", error="+e.getMessage());
 			}
 		}
 	}
@@ -143,6 +160,11 @@ public abstract class Resource {
 	}
 	
 	public String getJSON() {
+		//System.out.println(getJSONObject().toString());
 		return getJSONObject().toString();
+	}
+	
+	public String toString() {
+		return getJSON();
 	}
 }

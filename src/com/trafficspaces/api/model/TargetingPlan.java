@@ -43,12 +43,17 @@ public class TargetingPlan extends Resource {
 	public TargetingPlan() {}
 	
 	public TargetingPlan(JSONObject jsonObject) { super(jsonObject); }
+	
+	public TargetingPlan(String name, Targets targets) {
+		this.name = name;
+		this.targets = targets;
+	}
 
 	public String getName() {
   		return "targeting_plan";
   	}
 
-	static class Targets extends Resource {
+	public static class Targets extends Resource {
 		//******************************
 		//** INPUT & OUTPUT VARIABLES **
 		//******************************

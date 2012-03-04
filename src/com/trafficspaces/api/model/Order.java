@@ -30,7 +30,6 @@ public class Order extends Resource {
 	//** INPUT & OUTPUT VARIABLES **
 	//******************************
 	public String priority;
-	public String model;
 	public double price;
 	public double maximum_bid_price;
 	public int total_volume;
@@ -46,6 +45,7 @@ public class Order extends Resource {
 	//*** OUTPUT ONLY VARIABLES ****
 	//******************************
 	public String name;
+	public String model;
 	public String status;
 	public int filled_volume;
 	public String realm;
@@ -54,6 +54,19 @@ public class Order extends Resource {
 	public Order() {}
 	
 	public Order(JSONObject jsonObject) { super(jsonObject); }
+	
+	public static Order createOrder(double price, int total_volume, int daily_volume, String start_date, String end_date, 
+			LinkedResource linked_zone, LinkedResource linked_campaign) {
+		Order order = new Order();
+		order.price = price;
+		order.total_volume = total_volume;
+		order.daily_volume = daily_volume;
+		order.start_date = start_date;
+		order.end_date = end_date;
+		order.linked_zone = linked_zone;
+		order.linked_campaign = linked_campaign;
+		return order;
+	}
 	
 	public String getName() {
   		return "order";

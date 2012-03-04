@@ -19,39 +19,35 @@
  ** OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  ** THE SOFTWARE.
  ** 
- ** Reference Documentation: http://support.trafficspaces.com/kb/api/api-campaigns
+ ** Reference Documentation: http://support.trafficspaces.com/kb/api/api-ads
  **/
 package com.trafficspaces.api.model;
 
-import org.json.JSONObject;
+public class Flags extends Resource {
 
-public class Campaign extends Resource {
 	//******************************
-	//** INPUT & OUTPUT VARIABLES **
+	//*** INPUT ONLY VARIABLES  ****
 	//******************************
-	public String name;
-	public LinkedResource[] linked_ads;
-	public LinkedResource linked_user;
-	
-	//******************************
-	//*** OUTPUT ONLY VARIABLES ****
-	//******************************
-	public String realm;
-	public String creation_date;
-	public String last_modified_date;
-
-	public Campaign() {}
-	
-	public Campaign(JSONObject jsonObject) { super(jsonObject); }
-	
-	public static Campaign createCampaign(String name, LinkedResource[] linked_ads) {
-		Campaign campaign = new Campaign();
-		campaign.name = name;
-		campaign.linked_ads = linked_ads;
-		return campaign;
-	}
+		
+	public String keywords;
+	public String interests;
+	public String geographics;
+	public String coordinates;
+	public String genders;
+	public String ageranges;
+	public String incomeranges;
+	public String ethnicities;
+	public String relationships;
+	public String qualifications;
+	public String jobs;
+	public String industries;
+	public String politics;
+	public String religions;
+	public String languages; 
+		
+	public Flags() {}
 	
 	public String getName() {
-  		return "campaign";
-  	}
+		return "flags";
+	}
 }

@@ -88,6 +88,6 @@ public class ConnectorFactory {
 	}
 	
 	public Connector getPlacementConnector() throws TrafficspacesAPIException {
-		return new Connector(adServerEndPoint, "/resources/placements", Placement.class.getName());
+		return new PlacementConnector(adServerEndPoint, "/resources/placements.json", Placement.class.getName());
 	}
 }

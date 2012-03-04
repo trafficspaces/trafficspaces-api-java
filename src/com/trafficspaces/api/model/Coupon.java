@@ -31,17 +31,19 @@ public class Coupon extends Resource {
 	//******************************
 	public String name;
 	public String code;
+	public String type;
 	public double base_value;
 	public double discount_value;
 	public double maximum_cumulative_discount;
 	public int maximum_cumulative_uses;
+	public String reference;
 	public String linked_user;
 	
 	//******************************
 	//*** OUTPUT ONLY VARIABLES ****
 	//******************************
 	public String realm;
-	public String type;
+	
 	public double cumulative_discount;
 	public int cumulative_uses;
 	public String creation_date;
@@ -51,6 +53,24 @@ public class Coupon extends Resource {
 	public Coupon() {}
 	
 	public Coupon(JSONObject jsonObject) { super(jsonObject); }
+	
+	public static Coupon createAbsoluteCoupon(String name, String code, double base_value, double discount_value) {
+		return Coupon.createCoupon(name, code, base_value, discount_value, "absolute");
+	}
+	
+	public static Coupon createRelativeCoupon(String name, String code, double base_value, double discount_value) {
+		return Coupon.createCoupon(name, code, base_value, discount_value, "relative");
+	}
+	
+	public static Coupon createCoupon(String name, String code, double base_value, double discount_value, String type) {
+		Coupon coupon = new Coupon();
+		coupon.name = name;
+		coupon.code = code;
+		coupon.base_value = base_value;
+		coupon.discount_value = discount_value;
+		coupon.type = type;
+		return coupon;
+	}
 	
 	public String getName() {
   		return "coupon";

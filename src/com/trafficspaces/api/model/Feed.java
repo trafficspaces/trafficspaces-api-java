@@ -32,6 +32,7 @@ public class Feed extends Resource {
 	public String name;
 	public int width;
 	public int height;
+	public double weight;
 	public String channel;
 	public String provider;
 	public String ad_tag;
@@ -47,6 +48,16 @@ public class Feed extends Resource {
 	public Feed() {}
 	
 	public Feed(JSONObject jsonObject) { super(jsonObject); }
+	
+	public static Feed createFeed(String name, int width, int height, double weight, String ad_tag) {
+		Feed feed = new Feed();
+		feed.name = name;
+		feed.width = width;
+		feed.height = height;
+		feed.weight = weight;
+		feed.ad_tag = ad_tag;
+		return feed;
+	}
 	
 	public String getName() {
   		return "feed";

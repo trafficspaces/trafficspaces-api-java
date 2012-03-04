@@ -44,11 +44,24 @@ public class Contact extends Resource {
 	
 	public Contact(JSONObject jsonObject) { super(jsonObject); }
 	
+	public static Contact createContact(String name, Profile profile, LinkedResource linked_user) {
+		Contact contact = new Contact();
+		contact.name = name;
+		contact.profile = profile;
+		contact.linked_user = linked_user;
+		return contact;
+	}
+	
 	public String getName() {
   		return "contact";
   	}
 
-	static class Profile extends Resource {
+	public static class Profile extends Resource {
+		
+		public static final int TYPE_ADVERTISER = 0;
+		
+		public static final int TYPE_PUBLISHER = 1;
+		
 		//******************************
 		//** INPUT & OUTPUT VARIABLES **
 		//******************************
@@ -56,18 +69,24 @@ public class Contact extends Resource {
 		public String company_name;
 		public String website;
 		public String email;
-		public String type;
+		public int type;
 		public ContactDetails contact_details;
 	
 		public Profile() {}
 		
 		public Profile(JSONObject jsonObject) { super(jsonObject); }
 	
+		public Profile(String email, String company_name, int type) { 
+			this.email = email;
+			this.company_name = company_name;
+			this.type = type;
+		}
+		
 		public String getName() {
 	  		return "profile";
 	  	}
 	
-		static class ContactDetails extends Resource {
+		public static class ContactDetails extends Resource {
 			//******************************
 			//** INPUT & OUTPUT VARIABLES **
 			//******************************

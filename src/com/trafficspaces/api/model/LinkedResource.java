@@ -43,6 +43,11 @@ public class LinkedResource extends Resource {
 		this.resourceName = resourceName;
 	}
 	
+	public LinkedResource(String id, String name) {
+		super.id = id;
+		this.name = name;
+	}
+	
 	public LinkedResource(JSONObject jsonObject, String resourceName) { 
 		super(jsonObject);
 		this.resourceName = resourceName;

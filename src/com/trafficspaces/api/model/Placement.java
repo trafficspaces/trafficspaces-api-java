@@ -50,11 +50,23 @@ public class Placement extends Resource {
 	
 	public Placement(JSONObject jsonObject) { super(jsonObject); }
 
+	public static Placement createPlacement(String handle) {
+		return createPlacement(handle, null, 1);
+	}
+	
+	public static Placement createPlacement(String handle, String medium, int count) {
+		Placement placement = new Placement();
+		placement.handle = handle;
+		placement.medium = medium;
+		placement.count = count;
+		return placement;
+	}
+	
 	public String getName() {
   		return "placement";
   	}
 
-	static class Ad extends Resource {
+	public static class Ad extends Resource {
 	
 		//******************************
 		//*** OUTPUT ONLY VARIABLES ****
@@ -72,7 +84,7 @@ public class Placement extends Resource {
 	  		return "ad";
 	  	}
 		
-		static class Creative extends Resource {
+		public static class Creative extends Resource {
 			//******************************
 			//*** OUTPUT ONLY VARIABLES ****
 			//******************************
@@ -83,6 +95,7 @@ public class Placement extends Resource {
 			public String title;
 			public String caption;
 			public String anchor;
+			public String raw;
 			public String target_url;
 			
 			public Creative() {}

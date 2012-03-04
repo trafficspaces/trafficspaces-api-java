@@ -25,6 +25,8 @@ package com.trafficspaces.api.model;
 
 import org.json.JSONObject;
 
+import com.trafficspaces.api.model.Zone.Pricing;
+
 public class Ad extends Resource {
 	//******************************
 	//** INPUT & OUTPUT VARIABLES **
@@ -34,7 +36,7 @@ public class Ad extends Resource {
 	public int height;
 	public String status;
 	public String format;
-	public String creative;
+	public Creative creative;
 	public LinkedResource linked_user;
 	public LinkedResource linked_contact;
 	public LinkedResource linked_targeting_plan;
@@ -50,21 +52,40 @@ public class Ad extends Resource {
 	
 	public Ad(JSONObject jsonObject) { super(jsonObject); }
 
+	public static Ad createAd(String name, int width, int height, String format, Creative creative) {
+		return Ad.createAd(name, width, height, format, creative, null, null, null);
+	}
+	
+	public static Ad createAd(String name, int width, int height, String format, Creative creative, 
+			LinkedResource linked_user, LinkedResource linked_contact, LinkedResource linked_targeting_plan) {
+		Ad ad = new Ad();
+		ad.name = name;
+		ad.width = width;
+		ad.height = height;
+		ad.format = format;
+		ad.creative = creative;
+		ad.linked_user = linked_user;
+		ad.linked_contact = linked_contact;
+		ad.linked_targeting_plan = linked_targeting_plan;
+		return ad;
+	}
+
 	public String getName() {
   		return "ad";
   	}
 	
-	static class Creative extends Resource {
+	public static class Creative extends Resource {
 		//******************************
 		//** INPUT & OUTPUT VARIABLES **
 		//******************************
 		public String flash_url;
-		public String video_url;
-		public String audio_url;
 		public String image_url;
+		public String audio_url;
+		public String video_url;
 		public String title;
 		public String caption;
 		public String anchor;
+		public String raw;
 		public String target_url;
 		
 		public Creative() {}
@@ -74,5 +95,50 @@ public class Ad extends Resource {
 		public String getName() {
 	  		return "creative";
 	  	}
+
+		public static Creative createTextCreative(String title, String caption, String anchor, String image_url, String target_url) {
+			Creative creative = new Creative();
+			creative.title = title;
+			creative.caption = caption;
+			creative.anchor = anchor;
+			creative.image_url = image_url;
+			creative.target_url = target_url;
+			return creative;
+		}
+
+		public static Creative createImageCreative(String image_url, String target_url) {
+			Creative creative = new Creative();
+			creative.image_url = image_url;
+			creative.target_url = target_url;
+			return creative;
+		}
+		
+		public static Creative createFlashCreative(String flash_url, String target_url) {
+			Creative creative = new Creative();
+			creative.flash_url = flash_url;
+			creative.target_url = target_url;
+			return creative;
+		}
+		
+		public static Creative createAudioCreative(String audio_url, String target_url) {
+			Creative creative = new Creative();
+			creative.audio_url = audio_url;
+			creative.target_url = target_url;
+			return creative;
+		}
+
+		public static Creative createVideoCreative(String video_url, String target_url) {
+			Creative creative = new Creative();
+			creative.video_url = video_url;
+			creative.target_url = target_url;
+			return creative;
+		}
+
+		public static Creative createRawCreative(String raw, String target_url) {
+			Creative creative = new Creative();
+			creative.raw = raw;
+			creative.target_url = target_url;
+			return creative;
+		}
 	}
 }

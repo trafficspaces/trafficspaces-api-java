@@ -29,6 +29,7 @@ public class Zone extends Resource {
 	//******************************
 	//** INPUT & OUTPUT VARIABLES **
 	//******************************
+	public String handle;
 	public String name;
 	public int width;
 	public int height;
@@ -57,16 +58,25 @@ public class Zone extends Resource {
 	
 	public Zone(JSONObject jsonObject) { super(jsonObject); }
 
+	public static Zone createZone(String name, int width, int height, String formats, Pricing pricing) {
+		Zone zone = new Zone();
+		zone.name = name;
+		zone.width = width;
+		zone.height = height;
+		zone.formats = formats;
+		zone.pricing = pricing;
+		return zone;
+	}
+	
 	public String getName() {
   		return "zone";
   	}
 
-	static class Pricing extends Resource {
+	public static class Pricing extends Resource {
 		//******************************
 		//** INPUT & OUTPUT VARIABLES **
 		//******************************
 		public String model;
-		public boolean accept_bids;
 		public double price;
 		public double price_increment;
 		public int volume_minimum;
@@ -74,17 +84,27 @@ public class Zone extends Resource {
 		public int volume_increment;
 		public int order_concurrency;
 		public Discount[] discounts;
-	
+
+		//******************************
+		//** OUTPUT ONLY	VARIABLES **
+		//******************************
+		public boolean accept_bids;
+
 		public Pricing() {}
 		
 		public Pricing(JSONObject jsonObject) { super(jsonObject); }
+		
+		public Pricing(String model, double price) {
+			this.model = model;
+			this.price = price;
+		}
 
 		public String getName() {
 	  		return "pricing";
 	  	}
 	}
 	
-	static class Discount extends Resource {
+	public static class Discount extends Resource {
 		//******************************
 		//** INPUT & OUTPUT VARIABLES **
 		//******************************
@@ -94,6 +114,11 @@ public class Zone extends Resource {
 		public Discount() {}
 		
 		public Discount(JSONObject jsonObject) { super(jsonObject); }
+		
+		public Discount(double discount_rate, int volume_minimum) {
+			this.discount_rate = discount_rate;
+			this.volume_minimum = volume_minimum;
+		}
 
 		public String getName() {
 	  		return "discount";
@@ -110,6 +135,7 @@ public class Zone extends Resource {
 		public double conversions;
 		public double views;
 		public double duration;
+		public double timespent;
 		public double very_short_stay_uniques;
 		public double short_stay_uniques;
 		public double medium_stay_uniques;
