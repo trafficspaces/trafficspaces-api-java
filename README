@@ -1,1 +1,20 @@
 Implementation of the Trafficspaces API in Java
+===============================================
+
+1. Contains wrapper classes for all the API data resources
+2. Contains unit tests for APIs
+  
+Usage: 
+	java com.trafficspaces.api.tests.APITest {realm} {apikey}
+
+Parameters:
+1. realm - this is the subdomain of your ad store's URL. For example, if your URL is http://test.trafficspaces.com, then your realm is "test" 
+2. apikey - grab it from the "Setup > Integrations > API Access" section of your ad store.
+
+You can also test using these alternatives
+
+Curl:
+	curl -u test:d91936b7c8fa83dfe9330b3a144839a2e43e189f9ffd00f5d8d15d20ac0a2136 -H "accept: application/json" "https://test.trafficspaces.com/resources/zones"
+
+Web Browser:
+	https://test:d91936b7c8fa83dfe9330b3a144839a2e43e189f9ffd00f5d8d15d20ac0a2136@test.trafficspaces.com/resources/users"
