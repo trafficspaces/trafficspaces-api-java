@@ -81,7 +81,7 @@ public class APITest {
 		APITest apiTest = new APITest(args[0], args[1]);
 		
 		apiTest.testUserAPI();
-		apiTest.testContactAPI(); if (true) return;
+		apiTest.testContactAPI();
 		apiTest.testZoneAPI();
 		apiTest.testAdAPI();
 		apiTest.testCampaignAPI();
