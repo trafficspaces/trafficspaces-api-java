@@ -29,6 +29,7 @@ public class Zone extends Resource {
 	//******************************
 	//** INPUT & OUTPUT VARIABLES **
 	//******************************
+	public String handle;
 	public String name;
 	public int width;
 	public int height;
