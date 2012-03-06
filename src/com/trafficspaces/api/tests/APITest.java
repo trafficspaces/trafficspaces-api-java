@@ -439,7 +439,7 @@ public class APITest {
 		System.out.println("Fetching live ads");
 		
 		long startTime = System.currentTimeMillis();
-		List placements = connector.find(new Placement[] { Placement.createPlacement(zone.handle) }, null);
+		List placements = connector.find(new Placement[] { Placement.createPlacement(zone.id) }, null);
 
 		int adCount = 0;
 		if (placements != null) {
