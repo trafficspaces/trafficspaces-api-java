@@ -30,7 +30,8 @@ public class Order extends Resource {
 	//** INPUT & OUTPUT VARIABLES **
 	//******************************
 	public String priority;
-	public double price;
+	public double gross_purchase_price;
+	public double net_purchase_price;
 	public double maximum_bid_price;
 	public int total_volume;
 	public int daily_volume;	
@@ -48,7 +49,10 @@ public class Order extends Resource {
 	public String model;
 	public String status;
 	public int filled_volume;
+	public double average_bid_price;
+	public String[] scheduled_dates;
 	public String realm;
+	public String last_run_date;
 	public String last_modified_date;
 
 	public Order() {}
@@ -58,7 +62,9 @@ public class Order extends Resource {
 	public static Order createOrder(double price, int total_volume, int daily_volume, String start_date, String end_date, 
 			LinkedResource linked_zone, LinkedResource linked_campaign) {
 		Order order = new Order();
-		order.price = price;
+		order.gross_purchase_price = price;
+		order.net_purchase_price = price;
+		order.maximum_bid_price = price;
 		order.total_volume = total_volume;
 		order.daily_volume = daily_volume;
 		order.start_date = start_date;

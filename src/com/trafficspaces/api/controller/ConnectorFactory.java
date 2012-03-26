@@ -37,10 +37,15 @@ import com.trafficspaces.api.model.Placement;
 public class ConnectorFactory {
 	private EndPoint adStoreEndPoint;
 	private EndPoint adServerEndPoint;
-	
+
 	public ConnectorFactory(String subDomain, String apiKey) {
 		this.adStoreEndPoint  = new EndPoint("https://" + subDomain + ".trafficspaces.com", subDomain, apiKey);
 		this.adServerEndPoint = new EndPoint("http://ads.trafficspaces.net");
+	}
+	
+	public ConnectorFactory(EndPoint adStoreEndPoint, EndPoint adServerEndPoint) {
+		this.adStoreEndPoint  = adStoreEndPoint;
+		this.adServerEndPoint = adServerEndPoint;
 	}
 		
 	public Connector getUserConnector() throws TrafficspacesAPIException {

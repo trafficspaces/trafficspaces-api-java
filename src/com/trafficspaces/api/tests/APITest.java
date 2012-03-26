@@ -79,17 +79,21 @@ public class APITest {
 		}
 		
 		APITest apiTest = new APITest(args[0], args[1]);
+		apiTest.runTests();
+	}
+	
+	public void runTests() throws IOException, TrafficspacesAPIException {
 		
-		apiTest.testUserAPI();
-		apiTest.testContactAPI();
-		apiTest.testZoneAPI();
-		apiTest.testAdAPI();
-		apiTest.testCampaignAPI();
-		apiTest.testTargetingPlanAPI();
-		apiTest.testFeedAPI();
-		apiTest.testOrderAPI();
-		apiTest.testCouponAPI();
-		apiTest.testPlacementsAPI();
+		testUserAPI();
+		testContactAPI();
+		testZoneAPI();
+		testAdAPI();
+		testCampaignAPI();
+		testTargetingPlanAPI();
+		testFeedAPI();
+		testOrderAPI();
+		testCouponAPI();
+		testPlacementsAPI();
 	}
 
 	
@@ -423,7 +427,7 @@ public class APITest {
 		PlacementConnector connector = (PlacementConnector) factory.getPlacementConnector();
 		
 		// 1. List
-		props.put("pagesize", "1");
+		props.put("pagesize", "3");
 		props.put("status", "playing");
 		
 		System.out.println("Fetching a live insertion order");
@@ -432,26 +436,28 @@ public class APITest {
 			System.out.println("There are no available insertion orders");
 			return;
 		}
-		Order order = (Order) orders.get(0);		
-		
-		Zone zone = (Zone) factory.getZoneConnector().read(order.linked_zone.id);
-
-		System.out.println("Fetching live ads");
-		
-		long startTime = System.currentTimeMillis();
-		List placements = connector.find(new Placement[] { Placement.createPlacement(zone.handle) }, null);
-
-		int adCount = 0;
-		if (placements != null) {
-			Iterator itr = placements.iterator();
-			while (itr.hasNext()) {
-				Placement placement = (Placement) itr.next();
-				adCount += (placement.ads != null)  ? placement.ads.length : 0;
+		for (int i = 0; i < orders.size(); i++) {
+			Order order = (Order) orders.get(i);		
+			
+			Zone zone = (Zone) factory.getZoneConnector().read(order.linked_zone.id);
+	
+			System.out.println("Fetching live ads");
+			
+			long startTime = System.currentTimeMillis();
+			List placements = connector.find(new Placement[] { Placement.createPlacement(zone.handle) }, null);
+	
+			int adCount = 0;
+			if (placements != null) {
+				Iterator itr = placements.iterator();
+				while (itr.hasNext()) {
+					Placement placement = (Placement) itr.next();
+					adCount += (placement.ads != null)  ? placement.ads.length : 0;
+				}
 			}
+			System.out.println("Got ads in =" + (System.currentTimeMillis() - startTime) + " (msecs)");
+			System.out.println("Found  "+ placements.size() + " placements");
+			System.out.println("Found  "+ adCount+ " ads");
 		}
-		System.out.println("Got ads in =" + (System.currentTimeMillis() - startTime) + " (msecs)");
-		System.out.println("Found  "+ placements.size() + " placements");
-		System.out.println("Found  "+ adCount+ " ads");
 	}
 
 
