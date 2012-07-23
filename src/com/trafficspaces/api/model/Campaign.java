@@ -32,6 +32,7 @@ public class Campaign extends Resource {
 	public String name;
 	public LinkedResource[] linked_ads;
 	public LinkedResource linked_user;
+	public LinkedResource linked_contact;
 	
 	//******************************
 	//*** OUTPUT ONLY VARIABLES ****
@@ -45,9 +46,14 @@ public class Campaign extends Resource {
 	public Campaign(JSONObject jsonObject) { super(jsonObject); }
 	
 	public static Campaign createCampaign(String name, LinkedResource[] linked_ads) {
+		return Campaign.createCampaign(name, linked_ads, null);
+	}
+	
+	public static Campaign createCampaign(String name, LinkedResource[] linked_ads, LinkedResource linked_contact) {
 		Campaign campaign = new Campaign();
 		campaign.name = name;
 		campaign.linked_ads = linked_ads;
+		campaign.linked_contact = linked_contact;
 		return campaign;
 	}
 	
