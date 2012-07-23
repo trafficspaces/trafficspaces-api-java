@@ -57,20 +57,22 @@ import org.json.JSONObject;
  */
 public class APITest {	
 	
-	private static ConnectorFactory factory;
+	protected static ConnectorFactory factory;
 	
-	private static Properties defaults;
+	protected static Properties defaults;
 	
 	public static final DateFormat dateTimeFormat  = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 	
 	public APITest(String subDomain, String apiKey) {
 		factory = new ConnectorFactory(subDomain, apiKey);
-		
-		defaults = new Properties();
-		defaults.put("page", "1");
-		defaults.put("pagesize", "50");
+		init();
 	}
-
+	
+	public APITest(EndPoint adStoreEndPoint, EndPoint adServerEndPoint) {
+		factory = new ConnectorFactory(adStoreEndPoint, adServerEndPoint);
+		init();
+	}
+	
 	public static void main(String[] args) throws IOException, TrafficspacesAPIException {
 
 		if (args == null || args.length != 2) {
@@ -80,6 +82,12 @@ public class APITest {
 		
 		APITest apiTest = new APITest(args[0], args[1]);
 		apiTest.runTests();
+	}
+	
+	protected void init() {
+		defaults = new Properties();
+		defaults.put("page", "1");
+		defaults.put("pagesize", "50");
 	}
 	
 	public void runTests() throws IOException, TrafficspacesAPIException {
@@ -454,7 +462,7 @@ public class APITest {
 					adCount += (placement.ads != null)  ? placement.ads.length : 0;
 				}
 			}
-			System.out.println("Got ads in =" + (System.currentTimeMillis() - startTime) + " (msecs)");
+			System.out.println("Got ads in " + (System.currentTimeMillis() - startTime) + " (msecs)");
 			System.out.println("Found  "+ placements.size() + " placements");
 			System.out.println("Found  "+ adCount+ " ads");
 		}
